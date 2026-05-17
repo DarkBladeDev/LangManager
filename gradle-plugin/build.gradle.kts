@@ -12,8 +12,12 @@ gradlePlugin {
     }
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
-    // Gradle API comes from java-gradle-plugin automatically.
+    implementation("org.yaml:snakeyaml:2.2")
 }
 
 java {

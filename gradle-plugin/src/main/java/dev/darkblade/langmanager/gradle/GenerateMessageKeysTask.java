@@ -11,7 +11,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import org.yaml.snakeyaml.Yaml;
+import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
+import java.util.LinkedHashMap;
 
 public abstract class GenerateMessageKeysTask extends DefaultTask {
 
@@ -44,7 +48,15 @@ public abstract class GenerateMessageKeysTask extends DefaultTask {
 
         Properties props = new Properties();
         try (FileInputStream fis = new FileInputStream(srcFile)) {
-            props.load(fis);
+            if (srcFile.getName().endsWith(".yml") || srcFile.getName().endsWith(".yaml")) {
+                Yaml yaml = new Yaml();
+                Map<String, Object> yamlMap = yaml.load(fis);
+                if (yamlMap != null) {
+                    flattenYaml(yamlMap, "", props);
+                }
+            } else {
+                props.load(fis);
+            }
         }
 
         File outDir = getOutputDirectory().get().dir(pkg.replace('.', '/')).getAsFile();
@@ -101,5 +113,19 @@ public abstract class GenerateMessageKeysTask extends DefaultTask {
         }
         
         getLogger().info("Generated {} message keys into {}.{}", props.size(), pkg, cls);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void flattenYaml(Map<String, Object> source, String path, Properties dest) {
+        for (Map.Entry<String, Object> entry : source.entrySet()) {
+            String key = entry.getKey();
+            String newPath = path.isEmpty() ? key : path + "." + key;
+            Object value = entry.getValue();
+            if (value instanceof Map) {
+                flattenYaml((Map<String, Object>) value, newPath, dest);
+            } else if (value != null) {
+                dest.setProperty(newPath, String.valueOf(value));
+            }
+        }
     }
 }

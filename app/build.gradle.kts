@@ -20,6 +20,7 @@ dependencies {
     compileOnly("net.kyori:adventure-api:4.17.0")
     compileOnly("net.kyori:adventure-text-minimessage:4.17.0")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
+    implementation("org.yaml:snakeyaml:2.2")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

@@ -76,7 +76,8 @@ AdventureTemplateCompiler compiler = new AdventureTemplateCompiler();
 Translator<Component> translator = Translator.builder(renderer)
     .withCompiler(compiler)
     .withFallbackStrategy(new SimpleLocaleFallbackStrategy(Locale.US))
-    .addProvider(new LocalBundleProvider("messages", Set.of(Locale.US, Locale.of("es", "ES"))))
+    // Soportamos .properties nativos o .yml usando YamlDirectoryProvider
+    .addProvider(new YamlDirectoryProvider(new File("plugins/MiPlugin/lang"), "messages"))
     .build();
 
 // Iniciar carga asíncrona de archivos
